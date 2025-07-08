@@ -4,6 +4,7 @@ import { StatsCard } from './StatsCard';
 import { LoanApplicationForm } from '../forms/LoanApplicationForm';
 import { SavingsDepositForm } from '../forms/SavingsDepositForm';
 import { WithdrawalRequestForm } from '../forms/WithdrawalRequestForm';
+import { StatementDownloadModal } from '../modals/StatementDownloadModal';
 import { 
   DollarSign, 
   TrendingUp, 
@@ -20,6 +21,7 @@ export function MemberDashboard() {
   const [showLoanForm, setShowLoanForm] = useState(false);
   const [showDepositForm, setShowDepositForm] = useState(false);
   const [showWithdrawalForm, setShowWithdrawalForm] = useState(false);
+  const [showStatementModal, setShowStatementModal] = useState(false);
 
   // Mock member data - in a real app, this would come from the current user's data
   const memberData = {
@@ -82,6 +84,12 @@ export function MemberDashboard() {
     console.log('Withdrawal request submitted:', data);
     setShowWithdrawalForm(false);
     // Here you would typically process the withdrawal request
+  };
+
+  const handleStatementDownload = (data: any) => {
+    console.log('Statement download requested:', data);
+    setShowStatementModal(false);
+    // Here you would typically generate and download the statement
   };
 
   return (
@@ -219,6 +227,7 @@ export function MemberDashboard() {
                 </div>
               </button>
               <button className="w-full flex items-center justify-between p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                onClick={() => setShowStatementModal(true)}
                 <div className="flex items-center space-x-3">
                   <Download className="w-5 h-5 text-purple-600" />
                   <span className="font-medium text-purple-900">Download Statement</span>
@@ -281,6 +290,14 @@ export function MemberDashboard() {
           onSubmit={handleWithdrawalSubmit}
           onCancel={() => setShowWithdrawalForm(false)}
           availableBalance={memberData.savingsBalance}
+        />
+      )}
+
+      {showStatementModal && (
+        <StatementDownloadModal
+          onSubmit={handleStatementDownload}
+          onCancel={() => setShowStatementModal(false)}
+          memberData={memberData}
         />
       )}
     </div>

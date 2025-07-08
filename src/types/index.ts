@@ -136,9 +136,58 @@ export interface Approval {
   submittedDate: string;
   approvedBy?: string;
   approvedDate?: string;
+  rejectedBy?: string;
+  rejectedDate?: string;
+  rejectionRemark?: string;
   level: number;
   maxLevel: number;
   description: string;
+  currentApprover?: string;
+  approvalFlow: ApprovalFlowStep[];
+  history: ApprovalHistoryEntry[];
+}
+
+export interface ApprovalFlowStep {
+  level: number;
+  approverRole: string;
+  approverName: string;
+  required: boolean;
+  status: 'pending' | 'approved' | 'rejected' | 'skipped';
+  processedDate?: string;
+  remarks?: string;
+}
+
+export interface ApprovalHistoryEntry {
+  level: number;
+  approverName: string;
+  action: 'approved' | 'rejected' | 'forwarded';
+  date: string;
+  remarks?: string;
+}
+
+export interface ApprovalConfiguration {
+  id: string;
+  type: 'membership' | 'loan' | 'withdrawal';
+  name: string;
+  description: string;
+  steps: ApprovalConfigStep[];
+  isActive: boolean;
+  createdBy: string;
+  createdDate: string;
+  lastModified: string;
+}
+
+export interface ApprovalConfigStep {
+  level: number;
+  role: string;
+  title: string;
+  required: boolean;
+  conditions?: {
+    minAmount?: number;
+    maxAmount?: number;
+    membershipDuration?: number;
+    credibilityScore?: number;
+  };
 }
 
 export interface Report {
@@ -150,6 +199,7 @@ export interface Report {
   format: 'pdf' | 'excel' | 'csv' | 'word' | 'json';
   status: 'generating' | 'ready' | 'error';
   downloadUrl?: string;
+  memberId?: string; // For member-specific reports
 }
 
 export interface Notification {
@@ -160,6 +210,10 @@ export interface Notification {
   message: string;
   read: boolean;
   createdAt: string;
+  actionRequired?: boolean;
+  actionUrl?: string;
+  relatedId?: string;
+  relatedType?: string;
 }
 
 export interface AnalyticsData {
@@ -167,4 +221,22 @@ export interface AnalyticsData {
   monthlyExternalIncome: { month: string; amount: number; sources: number }[];
   monthlyExpenses: { month: string; amount: number; categories: number }[];
   savingsVsIncome: { month: string; savings: number; income: number; expenses: number }[];
+}
+
+export interface OtherIncomeEntry {
+  id: string;
+  memberId: string;
+  memberName: string;
+  source: string;
+  amount: number;
+  frequency: 'monthly' | 'quarterly' | 'annually' | 'one-time';
+  category: 'salary' | 'business' | 'investment' | 'rental' | 'pension' | 'freelance' | 'agriculture' | 'remittances' | 'grants' | 'other';
+  verified: boolean;
+  dateAdded: string;
+  lastUpdated: string;
+  description?: string;
+  supportingDocuments?: string[];
+  verifiedBy?: string;
+  verificationDate?: string;
+  status: 'pending' | 'verified' | 'rejected';
 }

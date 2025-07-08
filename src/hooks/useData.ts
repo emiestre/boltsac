@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Member, Loan, Savings, Approval, Report, Notification, ExternalIncome, CashFlowData, CredibilityMetrics, SaccoExpense, AnalyticsData } from '../types';
+import { Member, Loan, Savings, Approval, Report, Notification, ExternalIncome, CashFlowData, CredibilityMetrics, SaccoExpense, AnalyticsData, OtherIncomeEntry } from '../types';
 
 // Mock data with enhanced member profiles
 const mockMembers: Member[] = [
@@ -216,6 +216,103 @@ const mockMembers: Member[] = [
   }
 ];
 
+const mockOtherIncomes: OtherIncomeEntry[] = [
+  {
+    id: '1',
+    memberId: '1',
+    memberName: 'John Doe',
+    source: 'ABC Company Ltd',
+    amount: 3000000,
+    frequency: 'monthly',
+    category: 'salary',
+    verified: true,
+    dateAdded: '2024-01-15',
+    lastUpdated: '2024-02-01',
+    description: 'Monthly salary from tech company',
+    status: 'verified',
+    verifiedBy: 'Admin User',
+    verificationDate: '2024-01-16'
+  },
+  {
+    id: '2',
+    memberId: '1',
+    memberName: 'John Doe',
+    source: 'Rental Property',
+    amount: 800000,
+    frequency: 'monthly',
+    category: 'rental',
+    verified: true,
+    dateAdded: '2024-01-20',
+    lastUpdated: '2024-02-01',
+    description: 'Apartment rental income',
+    status: 'verified',
+    verifiedBy: 'Admin User',
+    verificationDate: '2024-01-21'
+  },
+  {
+    id: '3',
+    memberId: '2',
+    memberName: 'Jane Smith',
+    source: 'Freelance Design',
+    amount: 1500000,
+    frequency: 'monthly',
+    category: 'freelance',
+    verified: false,
+    dateAdded: '2024-02-20',
+    lastUpdated: '2024-02-20',
+    description: 'Graphic design services',
+    status: 'pending'
+  },
+  {
+    id: '4',
+    memberId: '3',
+    memberName: 'Peter Johnson',
+    source: 'Johnson Enterprises',
+    amount: 5000000,
+    frequency: 'monthly',
+    category: 'business',
+    verified: true,
+    dateAdded: '2023-12-10',
+    lastUpdated: '2024-02-01',
+    description: 'Business profits from enterprise',
+    status: 'verified',
+    verifiedBy: 'Treasurer',
+    verificationDate: '2023-12-11'
+  },
+  {
+    id: '5',
+    memberId: '4',
+    memberName: 'Mary Wilson',
+    source: 'Teaching Salary',
+    amount: 2200000,
+    frequency: 'monthly',
+    category: 'salary',
+    verified: true,
+    dateAdded: '2024-01-05',
+    lastUpdated: '2024-02-01',
+    description: 'Primary school teacher salary',
+    status: 'verified',
+    verifiedBy: 'Secretary',
+    verificationDate: '2024-01-06'
+  },
+  {
+    id: '6',
+    memberId: '5',
+    memberName: 'David Brown',
+    source: 'Agricultural Sales',
+    amount: 1800000,
+    frequency: 'quarterly',
+    category: 'agriculture',
+    verified: true,
+    dateAdded: '2023-11-20',
+    lastUpdated: '2024-02-01',
+    description: 'Coffee and maize sales',
+    status: 'verified',
+    verifiedBy: 'Loan Officer',
+    verificationDate: '2023-11-21'
+  }
+];
+
 const mockExpenses: SaccoExpense[] = [
   {
     id: '1',
@@ -347,7 +444,31 @@ const mockApprovals: Approval[] = [
     submittedDate: '2024-02-20',
     level: 1,
     maxLevel: 3,
-    description: 'New membership application'
+    description: 'New membership application',
+    approvalFlow: [
+      {
+        level: 1,
+        approverRole: 'secretary',
+        approverName: 'Mary Wilson',
+        required: true,
+        status: 'pending'
+      },
+      {
+        level: 2,
+        approverRole: 'treasurer',
+        approverName: 'John Doe',
+        required: true,
+        status: 'pending'
+      },
+      {
+        level: 3,
+        approverRole: 'chairperson',
+        approverName: 'Peter Johnson',
+        required: true,
+        status: 'pending'
+      }
+    ],
+    history: []
   },
   {
     id: '2',
@@ -359,7 +480,41 @@ const mockApprovals: Approval[] = [
     submittedDate: '2024-02-15',
     level: 2,
     maxLevel: 3,
-    description: 'Home improvement loan'
+    description: 'Home improvement loan',
+    approvalFlow: [
+      {
+        level: 1,
+        approverRole: 'loan_officer',
+        approverName: 'David Brown',
+        required: true,
+        status: 'approved',
+        processedDate: '2024-02-16',
+        remarks: 'Documentation complete, good credit history'
+      },
+      {
+        level: 2,
+        approverRole: 'treasurer',
+        approverName: 'John Doe',
+        required: true,
+        status: 'pending'
+      },
+      {
+        level: 3,
+        approverRole: 'chairperson',
+        approverName: 'Peter Johnson',
+        required: true,
+        status: 'pending'
+      }
+    ],
+    history: [
+      {
+        level: 1,
+        approverName: 'David Brown',
+        action: 'approved',
+        date: '2024-02-16',
+        remarks: 'Documentation complete, good credit history'
+      }
+    ]
   }
 ];
 
@@ -505,6 +660,7 @@ export function useData() {
   const [credibilityData, setCredibilityData] = useState<CredibilityMetrics[]>([]);
   const [expenses, setExpenses] = useState<SaccoExpense[]>([]);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData>(mockAnalyticsData);
+  const [otherIncomes, setOtherIncomes] = useState<OtherIncomeEntry[]>([]);
 
   useEffect(() => {
     // Simulate loading data
@@ -518,6 +674,7 @@ export function useData() {
       setCashFlowData(mockCashFlowData);
       setCredibilityData(mockCredibilityData);
       setExpenses(mockExpenses);
+      setOtherIncomes(mockOtherIncomes);
     }, 1000);
   }, []);
 
@@ -561,6 +718,46 @@ export function useData() {
     setExpenses(prev => [...prev, newExpense]);
   };
 
+  const addOtherIncome = (incomeData: Omit<OtherIncomeEntry, 'id'>) => {
+    const newIncome: OtherIncomeEntry = {
+      ...incomeData,
+      id: Math.random().toString(36).substr(2, 9),
+    };
+    setOtherIncomes(prev => [...prev, newIncome]);
+  };
+
+  const updateOtherIncome = (id: string, data: Partial<OtherIncomeEntry>) => {
+    setOtherIncomes(prev => prev.map(income => 
+      income.id === id ? { ...income, ...data } : income
+    ));
+  };
+
+  const deleteOtherIncome = (id: string) => {
+    setOtherIncomes(prev => prev.filter(income => income.id !== id));
+  };
+
+  const verifyOtherIncome = (id: string) => {
+    setOtherIncomes(prev => prev.map(income => 
+      income.id === id ? { 
+        ...income, 
+        status: 'verified', 
+        verified: true,
+        verifiedBy: 'Current User',
+        verificationDate: new Date().toISOString()
+      } : income
+    ));
+  };
+
+  const rejectOtherIncome = (id: string, reason: string) => {
+    setOtherIncomes(prev => prev.map(income => 
+      income.id === id ? { 
+        ...income, 
+        status: 'rejected', 
+        verified: false,
+        description: `${income.description || ''} [Rejected: ${reason}]`
+      } : income
+    ));
+  };
   return {
     members,
     loans,
@@ -572,9 +769,15 @@ export function useData() {
     credibilityData,
     expenses,
     analyticsData,
+    otherIncomes,
     approveItem,
     rejectItem,
     updateMember,
-    addExpense
+    addExpense,
+    addOtherIncome,
+    updateOtherIncome,
+    deleteOtherIncome,
+    verifyOtherIncome,
+    rejectOtherIncome
   };
 }

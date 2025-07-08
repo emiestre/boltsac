@@ -8,6 +8,9 @@ import { RecentActivity } from './RecentActivity';
 import { CashFlowChart } from './CashFlowChart';
 import { CredibilityChart } from './CredibilityChart';
 import { AnalyticsChart } from './AnalyticsChart';
+import { OtherIncomeTable } from './OtherIncomeTable';
+import { ApprovalDetailsModal } from '../modals/ApprovalDetailsModal';
+import { ApprovalConfigModal } from '../modals/ApprovalConfigModal';
 import { MemberRegistrationForm } from '../forms/MemberRegistrationForm';
 import { LoanApplicationForm } from '../forms/LoanApplicationForm';
 import { ExpenseForm } from '../forms/ExpenseForm';
@@ -25,15 +28,20 @@ import {
   Plus,
   BarChart3,
   Star,
-  Receipt
+  Receipt,
+  Settings,
+  Workflow
 } from 'lucide-react';
 
 export function AdminDashboard() {
-  const { members, loans, savings, approvals, cashFlowData, credibilityData, expenses, analyticsData, approveItem, rejectItem, updateMember, addExpense } = useData();
+  const { members, loans, savings, approvals, cashFlowData, credibilityData, expenses, analyticsData, otherIncomes, approveItem, rejectItem, updateMember, addExpense, addOtherIncome, updateOtherIncome, deleteOtherIncome, verifyOtherIncome, rejectOtherIncome } = useData();
   const [activeTab, setActiveTab] = useState('overview');
   const [showMemberForm, setShowMemberForm] = useState(false);
   const [showLoanForm, setShowLoanForm] = useState(false);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [showApprovalDetails, setShowApprovalDetails] = useState(false);
+  const [showApprovalConfig, setShowApprovalConfig] = useState(false);
+  const [selectedApproval, setSelectedApproval] = useState<any>(null);
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [showMemberProfile, setShowMemberProfile] = useState(false);
   const [showMemberEdit, setShowMemberEdit] = useState(false);
@@ -65,10 +73,12 @@ export function AdminDashboard() {
     { id: 'members', label: 'Members', icon: Users },
     { id: 'loans', label: 'Loans', icon: DollarSign },
     { id: 'approvals', label: 'Approvals', icon: UserCheck },
+    { id: 'other-income', label: 'Other Income', icon: Receipt },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'cashflow', label: 'Cash Flow', icon: BarChart3 },
     { id: 'credibility', label: 'Credibility', icon: Star },
     { id: 'expenses', label: 'Expenses', icon: Receipt },
+    { id: 'approval-config', label: 'Approval Config', icon: Settings },
     { id: 'reports', label: 'Reports', icon: FileText },
   ];
 
@@ -110,6 +120,26 @@ export function AdminDashboard() {
     setShowMemberEdit(true);
   };
 
+  const handleViewApprovalDetails = (approval: any) => {
+    setSelectedApproval(approval);
+    setShowApprovalDetails(true);
+  };
+
+  const handleAddRemark = (approval: any) => {
+    setSelectedApproval(approval);
+    setShowApprovalDetails(true);
+  };
+
+  const handleApprovalAction = (id: string, action: string, remarks?: string) => {
+    if (action === 'approve') {
+      approveItem(id, selectedApproval?.type);
+    } else if (action === 'reject') {
+      rejectItem(id, selectedApproval?.type);
+    }
+    setShowApprovalDetails(false);
+    setSelectedApproval(null);
+  };
+
   const downloadReport = (type: string, format: string) => {
     console.log(`Downloading ${type} report as ${format}`);
     // Mock download functionality
@@ -144,6 +174,13 @@ export function AdminDashboard() {
           >
             <Plus className="w-4 h-4" />
             <span>Record Expense</span>
+          </button>
+          <button 
+            onClick={() => setShowApprovalConfig(true)}
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+          >
+            <Settings className="w-4 h-4" />
+            <span>Config Approvals</span>
           </button>
         </div>
       </div>
@@ -286,12 +323,15 @@ export function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">SACCO Expenses</h2>
                   <button 
+                    onClick={() => setActiveTab('approvals')}
                     onClick={() => setShowExpenseForm(true)}
+                    onClick={() => setActiveTab('approvals')}
                     className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
                   >
                     Record Expense
                   </button>
                 </div>
+                    onClick={() => setActiveTab('reports')}
               </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -333,10 +373,75 @@ export function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+              onViewDetails={handleViewApprovalDetails}
+              onAddRemark={handleAddRemark}
             </div>
           </div>
         )}
 
+        {activeTab === 'other-income' && (
+          <div className="lg:col-span-3">
+            <OtherIncomeTable
+              incomes={otherIncomes || []}
+              onAdd={addOtherIncome}
+              onEdit={updateOtherIncome}
+              onDelete={deleteOtherIncome}
+              onVerify={verifyOtherIncome}
+              onReject={rejectOtherIncome}
+              canEdit={true}
+            />
+          </div>
+        {activeTab === 'approval-config' && (
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Approval Flow Configuration</h2>
+                  <p className="text-gray-600">Configure approval workflows for different request types</p>
+                </div>
+                <button 
+                  onClick={() => setShowApprovalConfig(true)}
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>New Workflow</span>
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {['membership', 'loan', 'withdrawal'].map((type) => (
+                  <div key={type} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Workflow className="w-5 h-5 text-purple-600" />
+                      <h3 className="font-medium text-gray-900 capitalize">{type} Approval</h3>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Steps:</span>
+                        <span className="font-medium">3</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Status:</span>
+                        <span className="text-green-600 font-medium">Active</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Avg. Time:</span>
+                        <span className="font-medium">2.5 days</span>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setShowApprovalConfig(true)}
+                      className="w-full mt-3 text-purple-600 hover:text-purple-800 text-sm font-medium"
+                    >
+                      Configure →
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        )}
         {activeTab === 'reports' && (
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -397,6 +502,28 @@ export function AdminDashboard() {
         />
       )}
 
+      {showApprovalDetails && selectedApproval && (
+        <ApprovalDetailsModal
+          approval={selectedApproval}
+          onClose={() => {
+            setShowApprovalDetails(false);
+            setSelectedApproval(null);
+          }}
+          onApprove={(id, remarks) => handleApprovalAction(id, 'approve', remarks)}
+          onReject={(id, remarks) => handleApprovalAction(id, 'reject', remarks)}
+          onForward={(id, remarks) => handleApprovalAction(id, 'forward', remarks)}
+        />
+      )}
+
+      {showApprovalConfig && (
+        <ApprovalConfigModal
+          onClose={() => setShowApprovalConfig(false)}
+          onSave={(config) => {
+            console.log('Approval config saved:', config);
+            setShowApprovalConfig(false);
+          }}
+        />
+      )}
       {showMemberProfile && selectedMember && (
         <MemberProfile
           member={selectedMember}
