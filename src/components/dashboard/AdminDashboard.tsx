@@ -43,6 +43,7 @@ export function AdminDashboard() {
     return memberSum + monthlyAmount;
   }, 0), 0);
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const averageCredibilityScore = credibilityData.reduce((sum, member) => sum + member.score, 0) / credibilityData.length || 0;
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: TrendingUp },
@@ -59,20 +60,63 @@ export function AdminDashboard() {
   ];
 
   const handleMemberSubmit = (data) => {
+        console.log('New member registration:',data);
     setShowMemberForm(false);
   };
+  
   const handleLoanSubmit = (data) => {
+        console.log('New loan application:', data);
     setShowLoanForm(false);
   };
   const handleExpenseSubmit = (data) => {
-    addExpense({ ...data, status: 'approved' });
+    addExpense({ ...data, status: 'approved' as const });
     setShowExpenseForm(false);
+  };
+
+  
+  const handleMemberEdit = (data: any) => {
+    if (selectedMember) {
+      updateMember(selectedMember.id, data);
+      setShowMemberEdit(false);
+      setSelectedMember(null);
+    }
+  };
+
+  const handleViewMember = (member: any) => {
+    setSelectedMember(member);
+    setShowMemberProfile(true);
+  };
+
+  const handleEditMember = (member: any) => {
+    setSelectedMember(member);
+    setShowMemberEdit(true);
+  };
+
+  const handleViewApprovalDetails = (approval: any) => {
+    setSelectedApproval(approval);
+    setShowApprovalDetails(true);
+  };
+
+  const handleAddRemark = (approval: any) => {
+    setSelectedApproval(approval);
+    setShowApprovalDetails(true);
+  };
+
+  const handleApprovalAction = (id: string, action: string, remarks?: string) => {
+    if (action === 'approve') {
+      approveItem(id, selectedApproval?.type);
+    } else if (action === 'reject') {
+      rejectItem(id, selectedApproval?.type);
+    }
+    setShowApprovalDetails(false);
+    setSelectedApproval(null);
   };
 
   const downloadReport = (type, format) => {
     console.log(`Downloading ${type} report as ${format}`);
   };
 
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
