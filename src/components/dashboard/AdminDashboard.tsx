@@ -16,6 +16,10 @@ import { LoanApplicationForm } from '../forms/LoanApplicationForm';
 import { ExpenseForm } from '../forms/ExpenseForm';
 import { MemberProfile } from '../MemberProfile';
 import { MemberEditForm } from '../forms/MemberEditForm';
+import { SystemSettingsComponent } from '../settings/SystemSettings';
+import { NotificationCenter } from '../notifications/NotificationCenter';
+import { useSettings } from '../../hooks/useSettings';
+import { useNotifications } from '../../hooks/useNotifications';
 import { 
   Users, 
   DollarSign, 
@@ -30,7 +34,8 @@ import {
   Star,
   Receipt,
   Settings,
-  Workflow
+  Workflow,
+  Bell
 } from 'lucide-react';
 
 export function AdminDashboard() {
@@ -45,6 +50,18 @@ export function AdminDashboard() {
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [showMemberProfile, setShowMemberProfile] = useState(false);
   const [showMemberEdit, setShowMemberEdit] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  
+  const { settings, updateSettings } = useSettings();
+  const { 
+    notifications, 
+    logs, 
+    sendNotification, 
+    retryNotification, 
+    cancelNotification, 
+    deleteNotification 
+  } = useNotifications(settings);
 
   const totalMembers = members.length;
   const activeMembers = members.filter(m => m.status === 'active').length;
@@ -79,6 +96,7 @@ export function AdminDashboard() {
     { id: 'credibility', label: 'Credibility', icon: Star },
     { id: 'expenses', label: 'Expenses', icon: Receipt },
     { id: 'approval-config', label: 'Approval Config', icon: Settings },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'reports', label: 'Reports', icon: FileText },
   ];
 
@@ -181,6 +199,13 @@ export function AdminDashboard() {
           >
             <Settings className="w-4 h-4" />
             <span>Config Approvals</span>
+          </button>
+          <button 
+            onClick={() => setShowSettings(true)}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center space-x-2"
+          >
+            <Settings className="w-4 h-4" />
+            <span>System Settings</span>
           </button>
         </div>
       </div>
@@ -441,6 +466,19 @@ export function AdminDashboard() {
           </div>
         )}
     
+        {activeTab === 'notifications' && (
+          <div className="lg:col-span-3">
+            <NotificationCenter
+              notifications={notifications}
+              logs={logs}
+              onSendNotification={sendNotification}
+              onRetryNotification={retryNotification}
+              onCancelNotification={cancelNotification}
+              onDeleteNotification={deleteNotification}
+            />
+          </div>
+        )}
+
         {activeTab === 'reports' && (
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -546,6 +584,14 @@ export function AdminDashboard() {
             setShowMemberEdit(false);
             setSelectedMember(null);
           }}
+        />
+      )}
+
+      {showSettings && (
+        <SystemSettingsComponent
+          settings={settings}
+          onSave={updateSettings}
+          onClose={() => setShowSettings(false)}
         />
       )}
     </div>

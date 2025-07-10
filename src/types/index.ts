@@ -240,3 +240,307 @@ export interface OtherIncomeEntry {
   verificationDate?: string;
   status: 'pending' | 'verified' | 'rejected';
 }
+
+export interface SystemSettings {
+  id: string;
+  general: GeneralSettings;
+  notifications: NotificationSettings;
+  security: SecuritySettings;
+  financial: FinancialSettings;
+  approval: ApprovalSettings;
+  integrations: IntegrationSettings;
+  lastModified: string;
+  modifiedBy: string;
+}
+
+export interface GeneralSettings {
+  saccoName: string;
+  saccoCode: string;
+  registrationNumber: string;
+  address: string;
+  phone: string;
+  email: string;
+  website?: string;
+  logo?: string;
+  timezone: string;
+  currency: string;
+  language: string;
+  dateFormat: string;
+  fiscalYearStart: string;
+}
+
+export interface NotificationSettings {
+  email: EmailNotificationSettings;
+  whatsapp: WhatsAppNotificationSettings;
+  sms: SMSNotificationSettings;
+  inApp: InAppNotificationSettings;
+}
+
+export interface EmailNotificationSettings {
+  enabled: boolean;
+  smtpHost: string;
+  smtpPort: number;
+  smtpUsername: string;
+  smtpPassword: string;
+  fromEmail: string;
+  fromName: string;
+  encryption: 'none' | 'tls' | 'ssl';
+  templates: EmailTemplateSettings;
+  triggers: NotificationTriggers;
+}
+
+export interface WhatsAppNotificationSettings {
+  enabled: boolean;
+  apiKey: string;
+  phoneNumberId: string;
+  accessToken: string;
+  webhookUrl: string;
+  businessAccountId: string;
+  templates: WhatsAppTemplateSettings;
+  triggers: NotificationTriggers;
+}
+
+export interface SMSNotificationSettings {
+  enabled: boolean;
+  provider: 'twilio' | 'africas_talking' | 'custom';
+  apiKey: string;
+  apiSecret: string;
+  senderId: string;
+  triggers: NotificationTriggers;
+}
+
+export interface InAppNotificationSettings {
+  enabled: boolean;
+  retentionDays: number;
+  triggers: NotificationTriggers;
+}
+
+export interface NotificationTriggers {
+  memberRegistration: boolean;
+  memberApproval: boolean;
+  loanApplication: boolean;
+  loanApproval: boolean;
+  loanRejection: boolean;
+  loanDisbursement: boolean;
+  paymentReminder: boolean;
+  paymentReceived: boolean;
+  savingsDeposit: boolean;
+  withdrawalRequest: boolean;
+  withdrawalApproval: boolean;
+  accountSuspension: boolean;
+  passwordReset: boolean;
+  systemMaintenance: boolean;
+  reportGeneration: boolean;
+  meetingNotification: boolean;
+  dividendDeclaration: boolean;
+}
+
+export interface EmailTemplateSettings {
+  memberWelcome: EmailTemplate;
+  loanApproval: EmailTemplate;
+  loanRejection: EmailTemplate;
+  paymentReminder: EmailTemplate;
+  paymentConfirmation: EmailTemplate;
+  withdrawalApproval: EmailTemplate;
+  accountStatement: EmailTemplate;
+  passwordReset: EmailTemplate;
+  meetingInvitation: EmailTemplate;
+}
+
+export interface WhatsAppTemplateSettings {
+  memberWelcome: WhatsAppTemplate;
+  loanApproval: WhatsAppTemplate;
+  paymentReminder: WhatsAppTemplate;
+  paymentConfirmation: WhatsAppTemplate;
+  withdrawalApproval: WhatsAppTemplate;
+  meetingReminder: WhatsAppTemplate;
+}
+
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  htmlContent: string;
+  textContent: string;
+  variables: string[];
+  isActive: boolean;
+}
+
+export interface WhatsAppTemplate {
+  id: string;
+  name: string;
+  templateName: string;
+  language: string;
+  content: string;
+  variables: string[];
+  isActive: boolean;
+}
+
+export interface SecuritySettings {
+  passwordPolicy: PasswordPolicy;
+  sessionTimeout: number;
+  maxLoginAttempts: number;
+  lockoutDuration: number;
+  twoFactorAuth: boolean;
+  ipWhitelist: string[];
+  auditLogging: boolean;
+  dataRetentionDays: number;
+}
+
+export interface PasswordPolicy {
+  minLength: number;
+  requireUppercase: boolean;
+  requireLowercase: boolean;
+  requireNumbers: boolean;
+  requireSpecialChars: boolean;
+  passwordExpiry: number;
+  preventReuse: number;
+}
+
+export interface FinancialSettings {
+  interestRates: InterestRateSettings;
+  fees: FeeSettings;
+  limits: LimitSettings;
+  calculations: CalculationSettings;
+}
+
+export interface InterestRateSettings {
+  savingsRate: number;
+  loanRates: {
+    personal: number;
+    business: number;
+    emergency: number;
+    education: number;
+    agriculture: number;
+  };
+  penaltyRate: number;
+}
+
+export interface FeeSettings {
+  membershipFee: number;
+  processingFee: number;
+  withdrawalFee: number;
+  statementFee: number;
+  latePaymentFee: number;
+}
+
+export interface LimitSettings {
+  minSavingsBalance: number;
+  maxLoanAmount: number;
+  maxLoanToSavingsRatio: number;
+  dailyWithdrawalLimit: number;
+  monthlyWithdrawalLimit: number;
+}
+
+export interface CalculationSettings {
+  compoundingFrequency: 'daily' | 'monthly' | 'quarterly' | 'annually';
+  gracePeriodDays: number;
+  latePaymentGraceDays: number;
+  credibilityScoreWeights: {
+    paymentHistory: number;
+    savingsConsistency: number;
+    loanRepaymentRate: number;
+    externalIncomeStability: number;
+    membershipDuration: number;
+  };
+}
+
+export interface ApprovalSettings {
+  autoApprovalLimits: {
+    loans: number;
+    withdrawals: number;
+  };
+  escalationRules: EscalationRule[];
+  reminderSettings: ReminderSettings;
+}
+
+export interface EscalationRule {
+  id: string;
+  type: 'loan' | 'withdrawal' | 'membership';
+  condition: string;
+  escalateAfterHours: number;
+  escalateTo: string;
+  isActive: boolean;
+}
+
+export interface ReminderSettings {
+  enabled: boolean;
+  firstReminderHours: number;
+  secondReminderHours: number;
+  finalReminderHours: number;
+}
+
+export interface IntegrationSettings {
+  mobileMoneyProviders: MobileMoneyProvider[];
+  bankingIntegrations: BankingIntegration[];
+  accountingSoftware: AccountingIntegration;
+  backupSettings: BackupSettings;
+}
+
+export interface MobileMoneyProvider {
+  id: string;
+  name: string;
+  provider: 'mtn' | 'airtel' | 'other';
+  apiKey: string;
+  apiSecret: string;
+  isActive: boolean;
+  fees: {
+    deposit: number;
+    withdrawal: number;
+  };
+}
+
+export interface BankingIntegration {
+  id: string;
+  bankName: string;
+  accountNumber: string;
+  apiEndpoint: string;
+  apiKey: string;
+  isActive: boolean;
+}
+
+export interface AccountingIntegration {
+  enabled: boolean;
+  software: 'quickbooks' | 'sage' | 'custom';
+  apiKey: string;
+  syncFrequency: 'realtime' | 'hourly' | 'daily';
+}
+
+export interface BackupSettings {
+  enabled: boolean;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  retentionDays: number;
+  cloudProvider: 'aws' | 'google' | 'azure' | 'local';
+  encryptionEnabled: boolean;
+}
+
+export interface NotificationQueue {
+  id: string;
+  type: 'email' | 'whatsapp' | 'sms' | 'in_app';
+  recipient: string;
+  subject?: string;
+  content: string;
+  templateId?: string;
+  variables?: Record<string, any>;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  status: 'pending' | 'sent' | 'failed' | 'cancelled';
+  scheduledAt?: string;
+  sentAt?: string;
+  failureReason?: string;
+  retryCount: number;
+  maxRetries: number;
+  createdAt: string;
+  relatedId?: string;
+  relatedType?: string;
+}
+
+export interface NotificationLog {
+  id: string;
+  notificationId: string;
+  type: 'email' | 'whatsapp' | 'sms' | 'in_app';
+  recipient: string;
+  status: 'sent' | 'delivered' | 'read' | 'failed';
+  timestamp: string;
+  response?: any;
+  errorMessage?: string;
+}
