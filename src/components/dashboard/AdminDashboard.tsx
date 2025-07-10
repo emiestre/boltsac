@@ -440,7 +440,7 @@ export function AdminDashboard() {
             </div>
           </div>
         )}
-        )}
+    
         {activeTab === 'reports' && (
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
