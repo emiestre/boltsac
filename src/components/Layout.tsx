@@ -18,7 +18,7 @@ export function Layout({ user, children, onLogout }: LayoutProps) {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">S</span>
+                  <span className="text-white font-bold text-sm">EM</span>
                 </div>
                 <span className="text-xl font-bold text-gray-900">SACCO Manager</span>
               </div>
