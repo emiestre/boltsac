@@ -87,6 +87,98 @@ export interface ExternalIncome {
   description?: string;
 }
 
+export interface Employee {
+  id: string;
+  employeeNumber: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email: string;
+  phone: string;
+  address: string;
+  dateOfBirth: string;
+  gender: string;
+  maritalStatus: string;
+  nationalId: string;
+  
+  // Employment Details
+  position: string;
+  department: string;
+  employmentType: 'full_time' | 'part_time' | 'contract' | 'intern';
+  startDate: string;
+  endDate?: string;
+  status: 'active' | 'inactive' | 'suspended' | 'terminated';
+  
+  // Compensation
+  basicSalary: number;
+  allowances: EmployeeAllowance[];
+  deductions: EmployeeDeduction[];
+  payrollFrequency: 'monthly' | 'bi_weekly' | 'weekly';
+  
+  // Contact & Emergency
+  emergencyContact: {
+    name: string;
+    phone: string;
+    relationship: string;
+  };
+  
+  // System Access
+  systemRole?: 'admin' | 'member' | 'auditor' | 'approval_officer' | 'chairperson' | 'vice_chairperson' | 'treasurer';
+  permissions: string[];
+  lastLogin?: string;
+  
+  // Documents
+  avatar?: string;
+  documents: EmployeeDocument[];
+  
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
+
+export interface EmployeeAllowance {
+  id: string;
+  type: string;
+  amount: number;
+  frequency: 'monthly' | 'quarterly' | 'annually' | 'one_time';
+  taxable: boolean;
+  description?: string;
+}
+
+export interface EmployeeDeduction {
+  id: string;
+  type: string;
+  amount: number;
+  frequency: 'monthly' | 'quarterly' | 'annually' | 'one_time';
+  mandatory: boolean;
+  description?: string;
+}
+
+export interface EmployeeDocument {
+  id: string;
+  type: string;
+  name: string;
+  url: string;
+  uploadedAt: string;
+  uploadedBy: string;
+}
+
+export interface PayrollRecord {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  period: string;
+  basicSalary: number;
+  totalAllowances: number;
+  totalDeductions: number;
+  grossPay: number;
+  netPay: number;
+  status: 'draft' | 'approved' | 'paid';
+  generatedAt: string;
+  approvedBy?: string;
+  paidAt?: string;
+}
+
 export interface SaccoExpense {
   id: string;
   category: 'operational' | 'administrative' | 'marketing' | 'maintenance' | 'utilities' | 'staff' | 'other';
@@ -402,6 +494,7 @@ export interface FinancialSettings {
   fees: FeeSettings;
   limits: LimitSettings;
   calculations: CalculationSettings;
+  loanCalculationMethod: 'flat_rate' | 'reducing_balance' | 'compound_interest';
 }
 
 export interface InterestRateSettings {

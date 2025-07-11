@@ -133,6 +133,33 @@ export function SystemSettingsComponent({ settings, onSave, onClose }: SystemSet
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
+            Organization Logo
+          </label>
+          <div className="flex items-center space-x-4">
+            {formData.general.logo && (
+              <img
+                src={formData.general.logo}
+                alt="Logo preview"
+                className="w-16 h-16 rounded-lg object-cover border border-gray-300"
+              />
+            )}
+            <div className="flex-1">
+              <input
+                type="url"
+                value={formData.general.logo || ''}
+                onChange={(e) => handleInputChange('general', 'logo', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter logo URL or upload image"
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Recommended size: 64x64 pixels. Supports PNG, JPG, SVG formats.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             SACCO Code *
           </label>
           <input
@@ -690,6 +717,45 @@ export function SystemSettingsComponent({ settings, onSave, onClose }: SystemSet
       
       <div className="border border-gray-200 rounded-lg p-6">
         <h4 className="font-medium text-gray-900 mb-4">Interest Rates (%)</h4>
+        
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Loan Calculation Method
+          </label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { 
+                value: 'flat_rate', 
+                label: 'Flat Rate', 
+                description: 'Interest calculated on original principal throughout loan term' 
+              },
+              { 
+                value: 'reducing_balance', 
+                label: 'Reducing Balance', 
+                description: 'Interest calculated on outstanding balance (most common)' 
+              },
+              { 
+                value: 'compound_interest', 
+                label: 'Compound Interest', 
+                description: 'Interest calculated on principal plus accumulated interest' 
+              }
+            ].map((method) => (
+              <div
+                key={method.value}
+                className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  formData.financial.loanCalculationMethod === method.value
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => handleInputChange('financial', 'loanCalculationMethod', method.value)}
+              >
+                <div className="font-medium text-gray-900">{method.label}</div>
+                <div className="text-sm text-gray-500 mt-1">{method.description}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
