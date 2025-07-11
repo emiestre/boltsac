@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Member, Loan, Savings, Approval, Report, Notification, ExternalIncome, CashFlowData, CredibilityMetrics, SaccoExpense, AnalyticsData, OtherIncomeEntry } from '../types';
+import { Member, Loan, Savings, Approval, Report, Notification, ExternalIncome, CashFlowData, CredibilityMetrics, SaccoExpense, AnalyticsData, OtherIncomeEntry, Employee, PayrollRecord } from '../types';
 
 // Mock data with enhanced member profiles
 const mockMembers: Member[] = [
@@ -649,6 +649,139 @@ const mockCredibilityData: CredibilityMetrics[] = [
   }
 ];
 
+const mockEmployees: Employee[] = [
+  {
+    id: '1',
+    employeeNumber: 'EMP001',
+    firstName: 'Sarah',
+    lastName: 'Johnson',
+    email: 'sarah.johnson@sacco.com',
+    phone: '+256-700-111222',
+    address: '123 Admin Street, Kampala',
+    dateOfBirth: '1985-06-15',
+    gender: 'female',
+    maritalStatus: 'married',
+    nationalId: 'CM85061512345678',
+    position: 'General Manager',
+    department: 'Management',
+    employmentType: 'full_time',
+    startDate: '2020-01-15',
+    status: 'active',
+    basicSalary: 4500000,
+    allowances: [],
+    deductions: [],
+    payrollFrequency: 'monthly',
+    emergencyContact: {
+      name: 'John Johnson',
+      phone: '+256-700-333444',
+      relationship: 'spouse'
+    },
+    systemRole: 'admin',
+    permissions: ['all'],
+    documents: [],
+    createdAt: '2020-01-15T00:00:00Z',
+    updatedAt: '2024-02-28T00:00:00Z',
+    createdBy: 'system'
+  },
+  {
+    id: '2',
+    employeeNumber: 'EMP002',
+    firstName: 'Michael',
+    lastName: 'Ochieng',
+    email: 'michael.ochieng@sacco.com',
+    phone: '+256-700-555666',
+    address: '456 Finance Avenue, Kampala',
+    dateOfBirth: '1988-03-22',
+    gender: 'male',
+    maritalStatus: 'single',
+    nationalId: 'CM88032287654321',
+    position: 'Finance Officer',
+    department: 'Finance',
+    employmentType: 'full_time',
+    startDate: '2021-03-01',
+    status: 'active',
+    basicSalary: 3200000,
+    allowances: [],
+    deductions: [],
+    payrollFrequency: 'monthly',
+    emergencyContact: {
+      name: 'Grace Ochieng',
+      phone: '+256-700-777888',
+      relationship: 'mother'
+    },
+    systemRole: 'treasurer',
+    permissions: ['finance', 'reports'],
+    documents: [],
+    createdAt: '2021-03-01T00:00:00Z',
+    updatedAt: '2024-02-28T00:00:00Z',
+    createdBy: 'admin'
+  },
+  {
+    id: '3',
+    employeeNumber: 'EMP003',
+    firstName: 'Grace',
+    lastName: 'Nakato',
+    email: 'grace.nakato@sacco.com',
+    phone: '+256-700-999000',
+    address: '789 Operations Road, Kampala',
+    dateOfBirth: '1990-11-08',
+    gender: 'female',
+    maritalStatus: 'married',
+    nationalId: 'CF90110811223344',
+    position: 'Operations Assistant',
+    department: 'Operations',
+    employmentType: 'full_time',
+    startDate: '2022-06-15',
+    status: 'active',
+    basicSalary: 2800000,
+    allowances: [],
+    deductions: [],
+    payrollFrequency: 'monthly',
+    emergencyContact: {
+      name: 'Paul Nakato',
+      phone: '+256-700-111333',
+      relationship: 'spouse'
+    },
+    permissions: ['operations', 'members'],
+    documents: [],
+    createdAt: '2022-06-15T00:00:00Z',
+    updatedAt: '2024-02-28T00:00:00Z',
+    createdBy: 'admin'
+  }
+];
+
+const mockPayrollRecords: PayrollRecord[] = [
+  {
+    id: '1',
+    employeeId: '1',
+    employeeName: 'Sarah Johnson',
+    period: 'February 2024',
+    basicSalary: 4500000,
+    totalAllowances: 500000,
+    totalDeductions: 750000,
+    grossPay: 5000000,
+    netPay: 4250000,
+    status: 'paid',
+    generatedAt: '2024-02-28T00:00:00Z',
+    approvedBy: 'Board',
+    paidAt: '2024-02-28T00:00:00Z'
+  },
+  {
+    id: '2',
+    employeeId: '2',
+    employeeName: 'Michael Ochieng',
+    period: 'February 2024',
+    basicSalary: 3200000,
+    totalAllowances: 300000,
+    totalDeductions: 525000,
+    grossPay: 3500000,
+    netPay: 2975000,
+    status: 'approved',
+    generatedAt: '2024-02-28T00:00:00Z',
+    approvedBy: 'Sarah Johnson'
+  }
+];
+
 export function useData() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -661,6 +794,8 @@ export function useData() {
   const [expenses, setExpenses] = useState<SaccoExpense[]>([]);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData>(mockAnalyticsData);
   const [otherIncomes, setOtherIncomes] = useState<OtherIncomeEntry[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
 
   useEffect(() => {
     // Simulate loading data
@@ -675,6 +810,8 @@ export function useData() {
       setCredibilityData(mockCredibilityData);
       setExpenses(mockExpenses);
       setOtherIncomes(mockOtherIncomes);
+      setEmployees(mockEmployees);
+      setPayrollRecords(mockPayrollRecords);
     }, 1000);
   }, []);
 
@@ -758,6 +895,46 @@ export function useData() {
       } : income
     ));
   };
+
+  const addEmployee = (employeeData: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newEmployee: Employee = {
+      ...employeeData,
+      id: Math.random().toString(36).substr(2, 9),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setEmployees(prev => [...prev, newEmployee]);
+  };
+
+  const updateEmployee = (id: string, data: Partial<Employee>) => {
+    setEmployees(prev => prev.map(employee => 
+      employee.id === id ? { ...employee, ...data, updatedAt: new Date().toISOString() } : employee
+    ));
+  };
+
+  const deleteEmployee = (id: string) => {
+    setEmployees(prev => prev.filter(employee => employee.id !== id));
+  };
+
+  const generatePayroll = (period: string) => {
+    const activeEmployees = employees.filter(emp => emp.status === 'active');
+    const newPayrollRecords = activeEmployees.map(employee => ({
+      id: Math.random().toString(36).substr(2, 9),
+      employeeId: employee.id,
+      employeeName: `${employee.firstName} ${employee.lastName}`,
+      period: period,
+      basicSalary: employee.basicSalary,
+      totalAllowances: employee.allowances.reduce((sum, allowance) => sum + allowance.amount, 0),
+      totalDeductions: employee.deductions.reduce((sum, deduction) => sum + deduction.amount, 0),
+      grossPay: employee.basicSalary + employee.allowances.reduce((sum, allowance) => sum + allowance.amount, 0),
+      netPay: employee.basicSalary + employee.allowances.reduce((sum, allowance) => sum + allowance.amount, 0) - employee.deductions.reduce((sum, deduction) => sum + deduction.amount, 0),
+      status: 'draft' as const,
+      generatedAt: new Date().toISOString()
+    }));
+    
+    setPayrollRecords(prev => [...prev, ...newPayrollRecords]);
+  };
+
   return {
     members,
     loans,
@@ -770,6 +947,8 @@ export function useData() {
     expenses,
     analyticsData,
     otherIncomes,
+    employees,
+    payrollRecords,
     approveItem,
     rejectItem,
     updateMember,
@@ -778,6 +957,10 @@ export function useData() {
     updateOtherIncome,
     deleteOtherIncome,
     verifyOtherIncome,
-    rejectOtherIncome
+    rejectOtherIncome,
+    addEmployee,
+    updateEmployee,
+    deleteEmployee,
+    generatePayroll
   };
 }

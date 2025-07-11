@@ -16,6 +16,7 @@ import { LoanApplicationForm } from '../forms/LoanApplicationForm';
 import { ExpenseForm } from '../forms/ExpenseForm';
 import { MemberProfile } from '../MemberProfile';
 import { MemberEditForm } from '../forms/MemberEditForm';
+import { EmployeeManagement } from './EmployeeManagement';
 import { SystemSettingsComponent } from '../settings/SystemSettings';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { useSettings } from '../../hooks/useSettings';
@@ -39,7 +40,32 @@ import {
 } from 'lucide-react';
 
 export function AdminDashboard() {
-  const { members, loans, savings, approvals, cashFlowData, credibilityData, expenses, analyticsData, otherIncomes, approveItem, rejectItem, updateMember, addExpense, addOtherIncome, updateOtherIncome, deleteOtherIncome, verifyOtherIncome, rejectOtherIncome } = useData();
+  const { 
+    members, 
+    loans, 
+    savings, 
+    approvals, 
+    cashFlowData, 
+    credibilityData, 
+    expenses, 
+    analyticsData, 
+    otherIncomes,
+    employees,
+    payrollRecords,
+    approveItem, 
+    rejectItem, 
+    updateMember, 
+    addExpense, 
+    addOtherIncome, 
+    updateOtherIncome, 
+    deleteOtherIncome, 
+    verifyOtherIncome, 
+    rejectOtherIncome,
+    addEmployee,
+    updateEmployee,
+    deleteEmployee,
+    generatePayroll
+  } = useData();
   const [activeTab, setActiveTab] = useState('overview');
   const [showMemberForm, setShowMemberForm] = useState(false);
   const [showLoanForm, setShowLoanForm] = useState(false);
@@ -95,6 +121,7 @@ export function AdminDashboard() {
     { id: 'cashflow', label: 'Cash Flow', icon: BarChart3 },
     { id: 'credibility', label: 'Credibility', icon: Star },
     { id: 'expenses', label: 'Expenses', icon: Receipt },
+    { id: 'employees', label: 'Employees', icon: Users },
     { id: 'approval-config', label: 'Approval Config', icon: Settings },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'reports', label: 'Reports', icon: FileText },
@@ -415,6 +442,20 @@ export function AdminDashboard() {
             />
           </div>
         )}
+
+        {activeTab === 'employees' && (
+          <div className="lg:col-span-3">
+            <EmployeeManagement
+              employees={employees}
+              payrollRecords={payrollRecords}
+              onAddEmployee={addEmployee}
+              onEditEmployee={updateEmployee}
+              onDeleteEmployee={deleteEmployee}
+              onGeneratePayroll={generatePayroll}
+            />
+          </div>
+        )}
+
         {activeTab === 'approval-config' && (
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
